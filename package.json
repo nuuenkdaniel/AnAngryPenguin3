@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.11.0",
+    "fs": "^0.0.1-security",
+    "mysql2": "^3.5.0",
     "nodemon": "^2.0.22"
   }
 }
