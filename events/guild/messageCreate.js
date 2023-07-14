@@ -1,10 +1,12 @@
 const fs = require('fs');
+const db = require('../../database.js');
 
 module.exports = {
     once: false,
-    execute(client,Discord,args) {
+    async execute(client,Discord,args) {
         try{
-            var prefix = fs.readFileSync('./prefix.txt', 'utf8');
+            const results = await db.promise().query('SELECT * FROM botinfo');
+            var prefix = results[0][0].prefix;
         }
         catch(err){
             console.log(err);

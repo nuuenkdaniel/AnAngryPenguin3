@@ -1,14 +1,15 @@
 const fs = require('fs');
+const db = require('../database.js');
 
 module.exports = {
     name: "helpPenguin",
     description: "creates an embed explaining all the commands",
-    execute(args,message,client,Discord){
-        let prefix = fs.readFileSync('./prefix.txt', 'utf8');
+    async execute(args,message,client,Discord){
+        const results = await db.promise().query('SELECT * FROM botinfo');
+        let prefix = results[0][0].prefix;
         const helpEmbed = new Discord.EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle('The Penguin Help Bar')
-            .setThumbnail('./wallpaper.png')
             .addFields( { name: "Prefix", value: prefix } )
         const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
         for(const file of commandFiles){
