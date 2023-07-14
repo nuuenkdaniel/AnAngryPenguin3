@@ -8,7 +8,8 @@ module.exports = {
         const helpEmbed = new Discord.EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle('The Penguin Help Bar')
-            .addFields( { name: "Prefix", value: prefix } );
+            .setThumbnail('./wallpaper.png')
+            .addFields( { name: "Prefix", value: prefix } )
         const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
         for(const file of commandFiles){
             const command = require(`../commands/${file}`);

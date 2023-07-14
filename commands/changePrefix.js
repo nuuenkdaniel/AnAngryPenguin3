@@ -3,7 +3,7 @@ const fs = require('fs');
 module.exports = {
     name: "changePrefix",
     description: "changes the prefix to the given prefix",
-    execute(args,message,client,Discord){
+    execute(args,message){
         let newPrefix = message.join(' ');
         console.log(newPrefix);
         try{
