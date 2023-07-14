@@ -6,7 +6,7 @@ module.exports = (client,Discord) => {
     for(const file of commandFiles){
         const command = require(`../commands/${file}`)
         if('name' in command && 'execute' in command){
-            client.commands.set(command.name,command);
+            client.commands.set(command.name.toLowerCase(),command);
         }
         else{
             console.log(`Error with the file: ${file}`);

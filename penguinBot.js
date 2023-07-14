@@ -1,9 +1,12 @@
 const Discord = require('discord.js');
-const { CLient, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const fs = require('fs');
 const db = require('mysql2');
 
-const client = new Discord.Client({ intents: [GatewayIntentBits.Guilds,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent,GatewayIntentBits.GuildMembers] });
+const client = new Client({ 
+    intents: [GatewayIntentBits.Guilds,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent,GatewayIntentBits.GuildMembers],
+    partials: [Partials.Message,Partials.Channel,Partials.Reaction],
+});
 client.commands = new Discord.Collection();
 
 let handlers = ['command_handler','event_handler'];
