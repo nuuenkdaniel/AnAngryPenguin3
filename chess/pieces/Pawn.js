@@ -1,9 +1,9 @@
 const Piece = require('./Piece');
 class Pawn extends Piece{
-    constructor(color, tileX, tileY, board, firstMove = true){
+    constructor(color, tileX, tileY, board, firstMove = true, justMoved2 = false){
         super(color, tileX, tileY, board);
         this.firstMove = firstMove;
-        this.justMoved2 = false;
+        this.justMoved2 = justMoved2;
     }
 
     getMoveInfo(mode){

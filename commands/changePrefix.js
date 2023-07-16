@@ -6,8 +6,9 @@ module.exports = {
     description: "changes the prefix to the given prefix",
     execute(args,message){
         const newPrefix = message.join(' ');
+        const guildId = args.guildId;
         try{
-            db.query(`UPDATE botinfo SET prefix='${newPrefix}'`);
+            db.query(`UPDATE botinfo SET prefix='${newPrefix}' WHERE guildid='${guildId}'`);
         }
         catch(err){
             console.log(err);

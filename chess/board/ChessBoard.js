@@ -7,11 +7,11 @@ const Queen = require('../pieces/Queen.js');
 const Rooke = require('../pieces/Rooke.js');
 
 class ChessBoard{
-    constructor(boardLength,boardWidth,tileSize){
+    constructor(boardLength,boardWidth,tileSize,board = []){
         this.boardLength = boardLength;
         this.boardWidth = boardWidth;
         this.tileSize = tileSize;
-        this.board = [];
+        this.board = board;
         this.createBoard();
         this.whiteKing;
         this.blackKing;

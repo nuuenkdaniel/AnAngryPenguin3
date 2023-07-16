@@ -5,7 +5,8 @@ module.exports = {
     name: "helpPenguin",
     description: "creates an embed explaining all the commands",
     async execute(args,message,client,Discord){
-        const results = await db.promise().query('SELECT * FROM botinfo');
+        const guildId = args.guildId;
+        const results = await db.promise().query(`SELECT prefix FROM botinfo WHERE guildid='${guildId}'`);
         let prefix = results[0][0].prefix;
         const helpEmbed = new Discord.EmbedBuilder()
             .setColor(0x0099FF)
