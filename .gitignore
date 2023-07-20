@@ -3,3 +3,4 @@ config.json
 package-lock.json
 package.json
 database.js
+assets

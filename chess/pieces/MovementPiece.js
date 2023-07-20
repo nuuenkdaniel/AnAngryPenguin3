@@ -2,7 +2,7 @@ const Piece = require('./Piece');
 
 class MovementPiece extends Piece{
     constructor(color, tileX, tileY, board){
-        if(constructor == MovementPiece){
+        if(constructor === MovementPiece){
             throw new error("Abstract classes can't be instantiated.");
         }
         super(color, tileX, tileY, board);

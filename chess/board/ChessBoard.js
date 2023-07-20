@@ -1,3 +1,4 @@
+const db = require('../../database.js');
 const Tile = require('./Tile.js');
 const Bishop = require('../pieces/Bishop.js');
 const King = require('../pieces/King.js');
@@ -34,6 +35,35 @@ class ChessBoard{
                 color = otherColor;
                 otherColor = tempColor;
             }
+        }
+    }
+
+    async dbBoard(guildId){
+        this.createBoard();
+        results = await db.promise().query(`SELECT * FROM chess WHERE guildid='${guildId}'`);
+        for(let pieceInfo of results[0]){
+            let piece;
+            switch(pieceInfo.piece){
+                case "pawn":
+                    piece = new Pawn(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard,(pieceInfo.firstmove === "1")? true : false,(pieceInfo.justmoved2 === "1")? true : false);
+                    break;
+                case "Rooke":
+                    piece = new Rooke(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard,(pieceInfo.firstmove === "1")? true : false);
+                    break;
+                case "Knight":
+                    piece = new Knight(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard);
+                    break;
+                case "Bishop":
+                    piece = new Bishop(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard);
+                    break;
+                case "Queen":
+                    piece = new Queen(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard,(pieceInfo.firstmove === "1")? true : false);
+                    break;
+                case "King":
+                    piece = new King(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard);
+                    break;
+            }
+            this.getTile(pieceInfo.tilex,pieceInfo.tiley).plPiece(piece);
         }
     }
 

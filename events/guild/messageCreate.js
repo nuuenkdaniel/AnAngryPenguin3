@@ -13,6 +13,6 @@ module.exports = {
         const cmd = message.shift().toLowerCase();
         const command = args.client.commands.get(cmd);
 
-        if(command) command.execute(args,message,client,Discord);
+        if(command) command.execute(args,message,client,Discord,prefix);
     }
 }

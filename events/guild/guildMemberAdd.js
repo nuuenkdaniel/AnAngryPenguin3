@@ -1,7 +1,6 @@
 module.exports = {
     once: false,
     async execute(client,Discord,member){
-        console.log(member);
         const welcomeEmbed = new Discord.EmbedBuilder()
             .setColor([255, 0, 255])
             .setTitle(`Welcome!`)
