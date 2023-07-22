@@ -5,7 +5,7 @@ const { drawBoard } = require('../chess/chessHandler/drawBoard.js');
 module.exports = {
     name: "movePiece",
     description: "moves selected piece to desired location Ex. (movePiece x1 y1 x2 y2)[work in progress]",
-    async execute(message,args,client,Discord,prefix){
+    async execute(message,args,prefix){
         let results = await db.promise().query(`SELECT chesssession,white,black FROM botinfo WHERE guildid='${message.guildId}'`);
         if(results[0][0].chesssession !== "1"){
             message.reply(`There is no chess session right now. Use ${prefix}playChess to create a game`);
@@ -18,17 +18,12 @@ module.exports = {
         await chessBoard.dbBoard(message.guildId);
         chessBoard.movePiece(Number(args[0]),Number(args[1]),Number(args[2]),Number(args[3]));
         try{
-            drawBoard(chessBoard).then(() => {
-                const file = new Discord.AttachmentBuilder('./assets/ChessBoard.png');
-                const chessEmbed = new Discord.EmbedBuilder()
-                    .setImage('attachment://ChessBoard.png');
-                message.channel.send({ embeds: [chessEmbed], files: [file] });
-            }).catch(err => {
-                console.log(err);
-            });
+            const chessEmbed = await drawBoard(chessBoard);
+            message.channel.send( {embeds: [chessEmbed[0]], files: [chessEmbed[1]]} );
         }
         catch(err){
             console.log(err);
+            message.channel.send("Error displaying ChessBoard");
         }        
     }
 }

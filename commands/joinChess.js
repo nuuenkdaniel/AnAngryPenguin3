@@ -3,7 +3,7 @@ const db = require('../database.js');
 module.exports = {
     name: "joinChess",
     description: "Joins the chess game Ex. ([prefix]joinChess white) to join white",
-    async execute(message,args,client,Discord,prefix){
+    async execute(message,args,prefix){
         let results = await db.promise().query(`SELECT chessSession FROM botinfo WHERE guildid='${message.guildId}'`);
         if(results[0][0].chessSession !== '1') {
             message.reply(`No chess game in session. Use ${prefix}playChess to start a game`);

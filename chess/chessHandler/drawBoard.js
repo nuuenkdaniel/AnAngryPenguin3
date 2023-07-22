@@ -1,5 +1,6 @@
 const { createCanvas,loadImage } = require('canvas');
 const fs = require('fs');
+const { AttachmentBuilder,EmbedBuilder } = require('discord.js');
 
 module.exports = {
     async drawBoard(board){
@@ -22,6 +23,8 @@ module.exports = {
                     drawPieces(board.getTile(i,j))
                 }
             }
+            const buffer = canvas.toBuffer("image/png");
+            fs.writeFileSync("./assets/ChessBoard.png",buffer);
         }
 
         function drawPieces(tile){
@@ -50,9 +53,14 @@ module.exports = {
             }
         }
 
+        function createEmbed(){
+            const file = new AttachmentBuilder('./assets/ChessBoard.png');
+            const chessEmbed = new EmbedBuilder()
+                .setImage('attachment://ChessBoard.png');
+            return [chessEmbed,file];
+        }
+
         drawChessBoard();
-        const buffer = canvas.toBuffer("image/png");
-        fs.writeFileSync("./assets/ChessBoard.png",buffer);
-        return;
+        return createEmbed();
     }
 }

@@ -1,13 +1,14 @@
 const fs = require('fs');
 const db = require('../database.js');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: "helpPenguin",
     description: "creates an embed explaining all the commands",
-    async execute(message,args,client,Discord){
+    async execute(message){
         const results = await db.promise().query(`SELECT prefix FROM botinfo WHERE guildid='${message.guildId}'`);
         let prefix = results[0][0].prefix;
-        const helpEmbed = new Discord.EmbedBuilder()
+        const helpEmbed = new EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle('The Penguin Help Bar')
             .addFields( { name: "Prefix", value: prefix } )

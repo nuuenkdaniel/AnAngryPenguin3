@@ -5,20 +5,13 @@ const { drawBoard } = require('../chess/chessHandler/drawBoard.js');
 module.exports = {
     name: "playChess",
     description: "creates a chessBoard",
-    async execute(message,args,client,Discord){
+    async execute(message){
         let chessBoard;
         try{
             chessBoard = new ChessBoard(8,8,25);
             chessBoard.createBoard();
             chessBoard.defaultBoardSetUp();
             message.channel.send("ChessBoard Created");
-        }
-        catch(err){
-            console.log(err);
-            message.channel.send("Error making ChessBoard");
-            return;
-        }
-        try{
             await db.promise().query(`DELETE FROM chess WHERE guildid='${message.guildId}'`);
             for(let i = 0; i < chessBoard.boardLength; i++){
                 for(let j = 0; j < chessBoard.boardWidth; j++){
@@ -43,19 +36,16 @@ module.exports = {
         }
         catch(err){
             console.log(err);
+            message.channel.send("Error making ChessBoard");
+            return;
         }
         try{
-            drawBoard(chessBoard).then(() => {
-                const file = new Discord.AttachmentBuilder('./assets/ChessBoard.png');
-                const chessEmbed = new Discord.EmbedBuilder()
-                    .setImage('attachment://ChessBoard.png');
-                message.channel.send({ embeds: [chessEmbed], files: [file] });
-            }).catch(err => {
-                console.log(err);
-            });
+            const chessEmbed = await drawBoard(chessBoard);
+            message.channel.send( {embeds: [chessEmbed[0]], files: [chessEmbed[1]]} );
         }
         catch(err){
             console.log(err);
+            message.channel.send("Error displaying ChessBoard");
         }        
     }
 }

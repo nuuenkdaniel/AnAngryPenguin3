@@ -12,6 +12,6 @@ module.exports = {
         const cmd = args.shift().toLowerCase();
         const command = message.client.commands.get(cmd);
 
-        if(command) command.execute(message,args,client,Discord,prefix);
+        if(command) command.execute(message,args,prefix,client);
     }
 }
