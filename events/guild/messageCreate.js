@@ -3,16 +3,15 @@ const db = require('../../database.js');
 
 module.exports = {
     once: false,
-    async execute(client,Discord,args) {
-        const guildId = args.guildId;
-        const results = await db.promise().query(`SELECT prefix FROM botinfo WHERE guildid='${guildId}'`);
+    async execute(client,Discord,message) {
+        const results = await db.promise().query(`SELECT prefix FROM botinfo WHERE guildid='${message.guildId}'`);
         const prefix = results[0][0].prefix;
-        if(!args.content.startsWith(prefix) || args.author.bot) return;
+        if(!message.content.startsWith(prefix) || message.author.bot) return;
 
-        const message = args.content.slice(prefix.length).split(/ +/);
-        const cmd = message.shift().toLowerCase();
-        const command = args.client.commands.get(cmd);
+        const args = message.content.slice(prefix.length).split(/ +/);
+        const cmd = args.shift().toLowerCase();
+        const command = message.client.commands.get(cmd);
 
-        if(command) command.execute(args,message,client,Discord,prefix);
+        if(command) command.execute(message,args,client,Discord,prefix);
     }
 }
