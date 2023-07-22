@@ -40,27 +40,28 @@ class ChessBoard{
 
     async dbBoard(guildId){
         this.createBoard();
-        results = await db.promise().query(`SELECT * FROM chess WHERE guildid='${guildId}'`);
+        const results = await db.promise().query(`SELECT * FROM chess WHERE guildid='${guildId}'`);
         for(let pieceInfo of results[0]){
             let piece;
+            //console.log(pieceInfo);
             switch(pieceInfo.piece){
                 case "pawn":
-                    piece = new Pawn(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard,(pieceInfo.firstmove === "1")? true : false,(pieceInfo.justmoved2 === "1")? true : false);
+                    piece = new Pawn(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this,(pieceInfo.firstmove === "1")? true : false,(pieceInfo.justmoved2 === "1")? true : false);
                     break;
-                case "Rooke":
-                    piece = new Rooke(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard,(pieceInfo.firstmove === "1")? true : false);
+                case "rooke":
+                    piece = new Rooke(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this,(pieceInfo.firstmove === "1")? true : false);
                     break;
-                case "Knight":
-                    piece = new Knight(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard);
+                case "knight":
+                    piece = new Knight(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this);
                     break;
-                case "Bishop":
-                    piece = new Bishop(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard);
+                case "bishop":
+                    piece = new Bishop(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this);
                     break;
-                case "Queen":
-                    piece = new Queen(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard,(pieceInfo.firstmove === "1")? true : false);
+                case "queen":
+                    piece = new Queen(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this,(pieceInfo.firstmove === "1")? true : false);
                     break;
-                case "King":
-                    piece = new King(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,chessBoard);
+                case "king":
+                    piece = new King(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this);
                     break;
             }
             this.getTile(pieceInfo.tilex,pieceInfo.tiley).plPiece(piece);

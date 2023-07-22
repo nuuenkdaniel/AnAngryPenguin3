@@ -3,8 +3,8 @@ const ChessBoard = require('../chess/board/ChessBoard.js');
 const { drawBoard } = require('../chess/chessHandler/drawBoard.js');
 
 module.exports = {
-    name: "movePiece",
-    description: "moves selected piece to desired location Ex. (movePiece x1 y1 x2 y2)[work in progress]",
+    name: "showChessBoard",
+    description: "Draws the current chessboard",
     async execute(args,message,client,Discord,prefix){
         let results = await db.promise().query(`SELECT chesssession,white,black FROM botinfo WHERE guildid='${args.guildId}'`);
         if(results[0][0].chesssession !== "1"){
@@ -16,7 +16,6 @@ module.exports = {
         }
         const chessBoard = new ChessBoard(8,8,25);
         await chessBoard.dbBoard(args.guildId);
-        chessBoard.movePiece(Number(message[0]),Number(message[1]),Number(message[2]),Number(message[3]));
         try{
             drawBoard(chessBoard).then(() => {
                 const file = new Discord.AttachmentBuilder('./assets/ChessBoard.png');
@@ -29,6 +28,6 @@ module.exports = {
         }
         catch(err){
             console.log(err);
-        }        
+        }
     }
 }

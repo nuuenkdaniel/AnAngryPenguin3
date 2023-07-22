@@ -8,10 +8,10 @@ module.exports = (client,Discord) => {
             const event = require(`../events/${dirs}/${file}`);
             const eventName = file.split('.')[0];
             if(event.once) {
-                client.once(eventName,(args) => event.execute(client,Discord,args))
+                client.once(eventName,(obj) => event.execute(client,Discord,obj))
             }
             else {
-                client.on(eventName, (args) => event.execute(client,Discord,args));
+                client.on(eventName, (obj) => event.execute(client,Discord,obj));
             }
         }
     }

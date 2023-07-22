@@ -45,10 +45,17 @@ module.exports = {
             console.log(err);
         }
         try{
-            drawBoard(chessBoard);
+            drawBoard(chessBoard).then(() => {
+                const file = new Discord.AttachmentBuilder('./assets/ChessBoard.png');
+                const chessEmbed = new Discord.EmbedBuilder()
+                    .setImage('attachment://ChessBoard.png');
+                args.channel.send({ embeds: [chessEmbed], files: [file] });
+            }).catch(err => {
+                console.log(err);
+            });
         }
         catch(err){
             console.log(err);
-        }
+        }        
     }
 }
