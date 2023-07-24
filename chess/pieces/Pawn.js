@@ -95,7 +95,7 @@ class Pawn extends Piece{
         possibleMoves.push([this.tileX,this.tileY-1]);
         //Can move down 2 spaces if first move
         if(this.firstMove){
-            if((this.tileY-2 <= -1) || (board.getTile(this.tileX,this.tileY-2).isTileOccupied())){
+            if((this.tileY-2 <= -1) || (this.board.getTile(this.tileX,this.tileY-2).isTileOccupied())){
                 return possibleMoves;
             }
             possibleMoves.push([this.tileX,this.tileY-2]);

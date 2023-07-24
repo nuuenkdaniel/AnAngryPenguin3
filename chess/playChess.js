@@ -3,6 +3,20 @@ const fs = require('fs');
 const { AttachmentBuilder,EmbedBuilder } = require('discord.js');
 
 module.exports = {
+    canMove(board,piece,x2,y2){
+        if(piece.getType() === "king"){
+            board.getTile(piece.tileX,piece.tileY).setTileOccupied(false);
+            board.getTile(piece.tileX,piece.tileY).getPiece().giveCheckedTiles(board.checkedTiles(board.turn));
+            board.getTile(piece.tileX,piece.tileY).setTileOccupied(true);
+        }
+        const possibleTiles = board.canMoveFilter(board.getTile(Number(piece.tileX),Number(piece.tileY)).getPiece().getMoveInfo(),[Number(piece.tileX),Number(piece.tileY)]);
+        for(const tiles of possibleTiles){
+            if((tiles[0] === Number(x2)) && (tiles[1] === Number(y2))){
+                return true;
+            }
+        }
+        return false;
+    },
     async drawBoard(board){
         const tileSize = 100;
         const boardWidth = board.boardWidth;

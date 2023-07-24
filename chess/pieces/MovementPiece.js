@@ -9,8 +9,8 @@ class MovementPiece extends Piece{
     }
 
     getPossibleMoves(moveX,moveY,board,mode){
-        let tMoveX = this.tileX+moveX;
-        let tMoveY = this.tileY+moveY;
+        let tMoveX = Number(this.tileX)+Number(moveX);
+        let tMoveY = Number(this.tileY)+Number(moveY);
         let possibleMoves = [];
         //Loops and appends possibleMoveCoords if position is within boundaries of the board
         while(((tMoveX < board.boardLength) && (tMoveX > -1)) && ((tMoveY < board.boardWidth) && (tMoveY > -1))){

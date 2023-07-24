@@ -1,6 +1,6 @@
 const db = require('../database.js');
 const ChessBoard = require('../chess/board/ChessBoard.js');
-const { drawBoard } = require('../chess/chessHandler/drawBoard.js');
+const { drawBoard } = require('../chess/playChess.js');
 
 module.exports = {
     name: "showChessBoard",

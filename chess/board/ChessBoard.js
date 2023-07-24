@@ -8,7 +8,7 @@ const Queen = require('../pieces/Queen.js');
 const Rooke = require('../pieces/Rooke.js');
 
 class ChessBoard{
-    constructor(boardLength,boardWidth,tileSize,board = []){
+    constructor(boardLength,boardWidth,tileSize,board = [],turn = "white"){
         this.boardLength = boardLength;
         this.boardWidth = boardWidth;
         this.tileSize = tileSize;
@@ -16,6 +16,7 @@ class ChessBoard{
         this.createBoard();
         this.whiteKing;
         this.blackKing;
+        this.turn = turn;
     }
 
     createBoard(){
@@ -46,25 +47,51 @@ class ChessBoard{
             //console.log(pieceInfo);
             switch(pieceInfo.piece){
                 case "pawn":
-                    piece = new Pawn(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this,(pieceInfo.firstmove === "1")? true : false,(pieceInfo.justmoved2 === "1")? true : false);
+                    piece = new Pawn(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false,(pieceInfo.justmoved2 === "1")? true : false);
                     break;
                 case "rooke":
-                    piece = new Rooke(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this,(pieceInfo.firstmove === "1")? true : false);
+                    piece = new Rooke(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false);
                     break;
                 case "knight":
-                    piece = new Knight(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this);
+                    piece = new Knight(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this);
                     break;
                 case "bishop":
-                    piece = new Bishop(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this);
+                    piece = new Bishop(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this);
                     break;
                 case "queen":
-                    piece = new Queen(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this,(pieceInfo.firstmove === "1")? true : false);
+                    piece = new Queen(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false);
                     break;
                 case "king":
-                    piece = new King(pieceInfo.color,pieceInfo.tilex,pieceInfo.tiley,this);
+                    piece = new King(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this);
+                    if(piece.getColor() === "white") this.whiteKing = piece;
+                    else this.blackKing = piece;
                     break;
             }
             this.getTile(pieceInfo.tilex,pieceInfo.tiley).plPiece(piece);
+        }
+    }
+
+    async logBoard(guildId){
+        await db.promise().query(`DELETE FROM chess WHERE guildid='${guildId}'`);
+        for(let i = 0; i < this.boardLength; i++){
+            for(let j = 0; j < this.boardWidth; j++){
+                const piece = this.getTile(i,j).getPiece();
+                if(piece !== null){
+                    const firstMove = (piece.getType() === "pawn" || piece.getType() === "rooke" || piece.getType() === "king")? piece.isFirstMove().toString() : null;
+                    const justMoved2 = (piece.getType() === "pawn")? piece.justMoved2.toString() : null;
+                    await db.promise().query(`INSERT INTO chess VALUES(
+                        '${guildId}',
+                        '${piece.getType()}',
+                        ${firstMove},
+                        '${piece.getColor()}',
+                        '${piece.getX()}',
+                        '${piece.getY()}',
+                        ${justMoved2}
+                    )
+                    `);
+                    await db.promise().query(`UPDATE botinfo SET chessSession=1 WHERE guildid='${guildId}'`);
+                }
+            }
         }
     }
 
@@ -291,7 +318,7 @@ class ChessBoard{
             for(let e = 0; e < this.boardWidth; e++){
                 if(this.getTile(i,e).getPiece() !== null){
                     if(this.getTile(i,e).getPiece().getColor() !== color){
-                        possibleMoves = possibleMoves.concat(board.getTile(i,e).getPiece().getMoveInfo("checkedTiles"));
+                        possibleMoves = possibleMoves.concat(this.getTile(i,e).getPiece().getMoveInfo("checkedTiles"));
                     }
                 }
             }
