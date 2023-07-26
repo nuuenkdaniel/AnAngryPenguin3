@@ -1,7 +1,9 @@
+const { EmbedBuilder } = require('discord.js');
+
 module.exports = {
     once: false,
-    async execute(client,Discord,member){
-        const welcomeEmbed = new Discord.EmbedBuilder()
+    async execute(client,member){
+        const welcomeEmbed = new EmbedBuilder()
             .setColor([255, 0, 255])
             .setTitle(`Welcome!`)
             .addFields( { name: ' ', value: `Welcome to the server ${member.user.username}!` } )

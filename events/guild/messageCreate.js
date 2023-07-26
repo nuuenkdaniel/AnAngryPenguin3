@@ -3,7 +3,7 @@ const db = require('../../database.js');
 
 module.exports = {
     once: false,
-    async execute(client,Discord,message) {
+    async execute(client,message) {
         const results = await db.promise().query(`SELECT prefix FROM botinfo WHERE guildid='${message.guildId}'`);
         const prefix = results[0][0].prefix;
         if(!message.content.startsWith(prefix) || message.author.bot) return;
