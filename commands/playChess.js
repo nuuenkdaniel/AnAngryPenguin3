@@ -1,6 +1,6 @@
-const db = require('../database.js');
 const ChessBoard = require('../chess/board/ChessBoard.js');
 const { drawBoard } = require('../chess/playChess.js');
+const db = require('../database.js');
 
 module.exports = {
     name: "playChess",
@@ -12,11 +12,12 @@ module.exports = {
             chessBoard.createBoard();
             chessBoard.defaultBoardSetUp();
             message.channel.send("ChessBoard Created");
+            await db.promise().query(`UPDATE botinfo SET white=NULL,black=NULL WHERE guildid='${message.guildId}'`);
             await chessBoard.logBoard(message.guildId);
         }
         catch(err){
             console.log(err);
-            message.channel.send("Error making ChessBoard");
+            message.channel.send("Error logging ChessBoard");
             return;
         }
         try{

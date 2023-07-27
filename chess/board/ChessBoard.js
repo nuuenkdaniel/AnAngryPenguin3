@@ -14,8 +14,6 @@ class ChessBoard{
         this.tileSize = tileSize;
         this.board = board;
         this.createBoard();
-        this.whiteKing;
-        this.blackKing;
         this.turn = turn;
     }
 
@@ -41,10 +39,9 @@ class ChessBoard{
 
     async dbBoard(guildId){
         this.createBoard();
-        const results = await db.promise().query(`SELECT * FROM chess WHERE guildid='${guildId}'`);
+        let results = await db.promise().query(`SELECT * FROM chess WHERE guildid='${guildId}'`);
         for(let pieceInfo of results[0]){
             let piece;
-            //console.log(pieceInfo);
             switch(pieceInfo.piece){
                 case "pawn":
                     piece = new Pawn(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false,(pieceInfo.justmoved2 === "1")? true : false);
@@ -69,6 +66,10 @@ class ChessBoard{
             }
             this.getTile(pieceInfo.tilex,pieceInfo.tiley).plPiece(piece);
         }
+        this.whiteKing.giveCheckedTiles(this.checkedTiles("white"));
+        this.blackKing.giveCheckedTiles(this.checkedTiles("black"));
+        results = await db.promise().query(`SELECT turn FROM botinfo WHERE guildid='${guildId}'`);
+        this.turn = results[0][0].turn;
     }
 
     async logBoard(guildId){
@@ -89,10 +90,10 @@ class ChessBoard{
                         ${justMoved2}
                     )
                     `);
-                    await db.promise().query(`UPDATE botinfo SET chessSession=1 WHERE guildid='${guildId}'`);
                 }
             }
         }
+        await db.promise().query(`UPDATE botinfo SET chessSession=1,turn='${this.turn}' WHERE guildid='${guildId}'`);
     }
 
     getTile(x,y){
@@ -184,11 +185,15 @@ class ChessBoard{
 
     enPassant(x1,y1,x2,y2){
         if(Math.abs(x1-x2) === 1 && this.getTile(x2,y1).isTileOccupied()) {
-            console.log("got here");
             if(this.getTile(x2,y1).getPiece().getType() === "pawn") {
                 if(this.getTile(x2,y1).getPiece().justMoved2 === true) this.getTile(x2,y1).rmPiece();
             }
         }
+    }
+
+    updateCheckedTiles(){
+        this.whiteKing.giveCheckedTiles(this.checkedTiles("white"));
+        this.blackKing.giveCheckedTiles(this.checkedTiles("black"));
     }
 
     /**
@@ -331,23 +336,19 @@ class ChessBoard{
      * @param {King} king 
      * @return {Boolean} - true if king is checkmated; false if king is not checkmated
      */
-    checkMate(king){
+    checkMate(){
+        const king = this.turn === "white"? this.whiteKing : this.blackKing;
         let possibleMoves = [];
         for(let i = 0; i < this.boardLength; i++){
             for(let e = 0; e < this.boardWidth; e++){
                 if(this.getTile(i,e).isTileOccupied()){
                     if(this.getTile(i,e).getPiece().getColor() === king.getColor()){
-                        possibleMoves = possibleMoves.concat(this.canMoveFilter(board.getTile(i,e).getPiece().getMoveInfo(),[i,e]));
+                        possibleMoves = possibleMoves.concat(this.canMoveFilter(this.getTile(i,e).getPiece().getMoveInfo(),[i,e]));
                     }
                 }
             }
         }
         return (possibleMoves.length < 1 && king.isChecked())
-    }
-
-    clone(){
-        newChessBoard = new ChessBoard(this.boardLength,this.boardWidth,this.tileSize);
-        newChessBoard.getTile()
     }
 }
 
