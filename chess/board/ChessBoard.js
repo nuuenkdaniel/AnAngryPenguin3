@@ -8,13 +8,14 @@ const Queen = require('../pieces/Queen.js');
 const Rooke = require('../pieces/Rooke.js');
 
 class ChessBoard{
-    constructor(boardLength,boardWidth,tileSize,board = [],turn = "white"){
+    constructor(boardLength,boardWidth,tileSize,board = [],move=1){
         this.boardLength = boardLength;
         this.boardWidth = boardWidth;
         this.tileSize = tileSize;
         this.board = board;
         this.createBoard();
-        this.turn = turn;
+        this.turn = (move%2 > 0)? "white" : "black";
+        this.move = move;
     }
 
     createBoard(){
@@ -39,12 +40,15 @@ class ChessBoard{
 
     async dbBoard(guildId){
         this.createBoard();
-        let results = await db.promise().query(`SELECT * FROM chess WHERE guildid='${guildId}'`);
+        let results = await db.promise().query(`SELECT currentmove FROM botinfo WHERE guildid='${guildId}'`);
+        this.move = results[0][0].currentmove;
+        this.turn = (this.move%2)? "white" : "black";
+        results = await db.promise().query(`SELECT * FROM chess WHERE guildid='${guildId}' AND move=${this.move}`);
         for(let pieceInfo of results[0]){
             let piece;
             switch(pieceInfo.piece){
                 case "pawn":
-                    piece = new Pawn(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false,(pieceInfo.justmoved2 === "1")? true : false);
+                    piece = new Pawn(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === 1)? true : false,(pieceInfo.justmoved2 === "1")? true : false);
                     break;
                 case "rooke":
                     piece = new Rooke(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false);
@@ -68,12 +72,10 @@ class ChessBoard{
         }
         this.whiteKing.giveCheckedTiles(this.checkedTiles("white"));
         this.blackKing.giveCheckedTiles(this.checkedTiles("black"));
-        results = await db.promise().query(`SELECT turn FROM botinfo WHERE guildid='${guildId}'`);
-        this.turn = results[0][0].turn;
+        this.move = results[0][0].move;
     }
 
     async logBoard(guildId){
-        await db.promise().query(`DELETE FROM chess WHERE guildid='${guildId}'`);
         for(let i = 0; i < this.boardLength; i++){
             for(let j = 0; j < this.boardWidth; j++){
                 const piece = this.getTile(i,j).getPiece();
@@ -87,13 +89,14 @@ class ChessBoard{
                         '${piece.getColor()}',
                         '${piece.getX()}',
                         '${piece.getY()}',
-                        ${justMoved2}
+                        ${justMoved2},
+                        ${this.move}
                     )
                     `);
                 }
             }
         }
-        await db.promise().query(`UPDATE botinfo SET chessSession=1,turn='${this.turn}' WHERE guildid='${guildId}'`);
+        await db.promise().query(`UPDATE botinfo SET chessSession=true,currentmove=${this.move} WHERE guildid='${guildId}'`);
     }
 
     getTile(x,y){

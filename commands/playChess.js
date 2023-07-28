@@ -13,6 +13,7 @@ module.exports = {
             chessBoard.defaultBoardSetUp();
             message.channel.send("ChessBoard Created");
             await db.promise().query(`UPDATE botinfo SET white=NULL,black=NULL WHERE guildid='${message.guildId}'`);
+            await db.promise().query(`DELETE FROM chess WHERE guildid='${message.guildId}'`);
             await chessBoard.logBoard(message.guildId);
         }
         catch(err){

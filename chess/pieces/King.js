@@ -35,6 +35,7 @@ class King extends Piece{
         if(this.firstMove === true && !this.isChecked()){
             if(direction === "left"){
                 let piece = this.board.getTile(0,this.tileY).getPiece();
+                if(piece === null) return false;
                 if(piece.getType() === "rooke") {
                     if(piece.isFirstMove() === false || piece.getColor() !== this.getColor()) return false;
                     for(let i = 1; i <= 3; i++) {

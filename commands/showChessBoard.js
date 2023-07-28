@@ -7,7 +7,7 @@ module.exports = {
     description: "Draws the current chessboard",
     async execute(message,args,prefix){
         const results = await db.promise().query(`SELECT chesssession FROM botinfo WHERE guildid='${message.guildId}'`);
-        if(results[0][0].chesssession !== "1"){
+        if(results[0][0].chesssession !== 1){
             message.reply(`There is no chess session right now. Use ${prefix}playChess to create a game`);
             return;
         }

@@ -6,16 +6,16 @@ module.exports = {
     name: "mvPiece",
     description: "moves selected piece to desired location Ex. (movePiece x1 y1 x2 y2)[work in progress]",
     async execute(message,args,prefix){
-        let results = await db.promise().query(`SELECT chesssession,white,black,turn FROM botinfo WHERE guildid='${message.guildId}'`);
-        if(results[0][0].chesssession !== "1"){
+        let results = await db.promise().query(`SELECT chesssession,white,black,currentmove FROM botinfo WHERE guildid='${message.guildId}'`);
+        if(results[0][0].chesssession !== 1){
             message.reply(`There is no chess session right now. Use ${prefix}playChess to create a game`);
             return;
         }
         if(results[0][0].white !== message.author.id && results[0][0].black !== message.author.id){
-            message.reply(`You are not in a chess game right now. Use ${prefix}joinChess to join the game`);
+            message.reply(`You are not in a chess game right now. Use ${prefix}join to join the game`);
             return;
         }
-        if((message.author.id === results[0][0].white && results[0][0].turn !== "white") || (message.author.id === results[0][0].black && results[0][0].turn !== "black")) {
+        if((message.author.id !== results[0][0].white && results[0][0].currentmove%2 > 0) || (message.author.id !== results[0][0].black && results[0][0].currentmove%2 === 0)) {
             message.reply("It is not your turn");
             return;
         }
@@ -26,18 +26,19 @@ module.exports = {
             message.reply(`There is no piece at ${args[0]},${args[1]}`);
             return;
         }
-        if(canMove(chessBoard,piece,args[2],args[3])) {
-            chessBoard.movePiece(Number(args[0]),Number(args[1]),Number(args[2]),Number(args[3]));
-            chessBoard.turn = chessBoard.turn === "white"? "black" : "white";
+        if(piece.getColor() !== chessBoard.turn) {
+            message.reply("You can only move your pieces");
+            return;
+        }
+        if(canMove(chessBoard,args[0],args[1],args[2],args[3])) {
             await chessBoard.logBoard(message.guildId);
-            chessBoard.updateCheckedTiles();
             const king = chessBoard.turn === "white"? chessBoard.whiteKing : chessBoard.blackKing;
             if(king.isChecked()){
                 if(chessBoard.checkMate()) {
                     if(chessBoard.turn === "white") message.channel.send("Checkmate! Black wins!");
                     else message.channel.send("Checkmate! White wins!");
                     await db.promise().query(`DELETE FROM chess WHERE guildid='${message.guildId}'`); 
-                    await db.promise().query(`UPDATE botinfo SET chessSession='0',white=NULL,black=NULL,turn=NULL WHERE guildid='${message.guildId}'`);
+                    await db.promise().query(`UPDATE botinfo SET chessSession=false,white=NULL,black=NULL,turn=NULL WHERE guildid='${message.guildId}'`);
                 }   
                 else message.channel.send(`${chessBoard.turn} is checked`);
             }

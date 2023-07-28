@@ -5,7 +5,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     name: "helpPenguin",
     description: "creates an embed explaining all the commands",
-    async execute(message){
+    async execute(message) {
         const results = await db.promise().query(`SELECT prefix FROM botinfo WHERE guildid='${message.guildId}'`);
         let prefix = results[0][0].prefix;
         const helpEmbed = new EmbedBuilder()

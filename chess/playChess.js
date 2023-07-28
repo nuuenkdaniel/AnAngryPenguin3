@@ -3,15 +3,30 @@ const fs = require('fs');
 const { AttachmentBuilder,EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    canMove(board,piece,x2,y2){
-        if(piece.getType() === "king"){
-            board.getTile(piece.tileX,piece.tileY).setTileOccupied(false);
-            board.getTile(piece.tileX,piece.tileY).getPiece().giveCheckedTiles(board.checkedTiles(board.turn));
-            board.getTile(piece.tileX,piece.tileY).setTileOccupied(true);
+    canMove(board,x1,y1,x2,y2){
+        function castlePressed(king,tile){
+            if(king.getX()+2 === x1 && board.getTile(tile[0],tile[1]).getPiece().getType() === "king") return "left";
+            if(king.getX()-2 === x1 && board.getTile(tile[0],tile[1]).getPiece().getType() === "king") {
+                console.log("Castled right");
+                return "right";
+            }
         }
-        const possibleTiles = board.canMoveFilter(board.getTile(Number(piece.tileX),Number(piece.tileY)).getPiece().getMoveInfo(),[Number(piece.tileX),Number(piece.tileY)]);
+        if(board.getTile(x1,y1).getPiece().getType() === "king"){
+            board.getTile(x1,y1).setTileOccupied(false);
+            board.getTile(x1,y1).getPiece().giveCheckedTiles(board.checkedTiles(board.turn));
+            board.getTile(x1,y1).setTileOccupied(true);
+        }
+        const possibleTiles = board.canMoveFilter(board.getTile(Number(x1),Number(y1)).getPiece().getMoveInfo(),[Number(x1),Number(y1)]);
         for(const tiles of possibleTiles){
             if((tiles[0] === Number(x2)) && (tiles[1] === Number(y2))){
+                board.movePiece(x1,y1,x2,y2);
+                board.move++;
+                board.updateCheckedTiles();
+                const king = (board.turn === "white")? board.whiteKing : board.blackKing;
+                board.resetPawn(board.turn);
+                if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,[x2,y2]) === "left") board.castle(king,"left");
+                else if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,[x2,y2]) === "right") board.castle(king,"right");
+                board.turn = board.turn === "white"? "black" : "white";
                 return true;
             }
         }
