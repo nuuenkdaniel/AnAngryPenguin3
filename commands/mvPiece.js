@@ -30,7 +30,7 @@ module.exports = {
             message.reply("You can only move your pieces");
             return;
         }
-        if(canMove(chessBoard,args[0],args[1],args[2],args[3])) {
+        if(canMove(chessBoard,Number(args[0]),Number(args[1]),Number(args[2]),Number(args[3]))) {
             await chessBoard.logBoard(message.guildId);
             const king = chessBoard.turn === "white"? chessBoard.whiteKing : chessBoard.blackKing;
             if(king.isChecked()){

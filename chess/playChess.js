@@ -4,12 +4,9 @@ const { AttachmentBuilder,EmbedBuilder } = require('discord.js');
 
 module.exports = {
     canMove(board,x1,y1,x2,y2){
-        function castlePressed(king,tile){
-            if(king.getX()+2 === x1 && board.getTile(tile[0],tile[1]).getPiece().getType() === "king") return "left";
-            if(king.getX()-2 === x1 && board.getTile(tile[0],tile[1]).getPiece().getType() === "king") {
-                console.log("Castled right");
-                return "right";
-            }
+        function castlePressed(king,x1){
+            if(king.getX()+2 === x1) return "left";
+            if(king.getX()-2 === x1) return "right";
         }
         if(board.getTile(x1,y1).getPiece().getType() === "king"){
             board.getTile(x1,y1).setTileOccupied(false);
@@ -24,8 +21,8 @@ module.exports = {
                 board.updateCheckedTiles();
                 const king = (board.turn === "white")? board.whiteKing : board.blackKing;
                 board.resetPawn(board.turn);
-                if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,[x2,y2]) === "left") board.castle(king,"left");
-                else if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,[x2,y2]) === "right") board.castle(king,"right");
+                if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,x1) === "left") board.castle(king,"left");
+                else if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,x1) === "right") board.castle(king,"right");
                 board.turn = board.turn === "white"? "black" : "white";
                 return true;
             }

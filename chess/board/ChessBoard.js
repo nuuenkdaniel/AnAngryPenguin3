@@ -51,7 +51,7 @@ class ChessBoard{
                     piece = new Pawn(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === 1)? true : false,(pieceInfo.justmoved2 === "1")? true : false);
                     break;
                 case "rooke":
-                    piece = new Rooke(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false);
+                    piece = new Rooke(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === 1)? true : false);
                     break;
                 case "knight":
                     piece = new Knight(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this);
@@ -60,10 +60,10 @@ class ChessBoard{
                     piece = new Bishop(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this);
                     break;
                 case "queen":
-                    piece = new Queen(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === "1")? true : false);
+                    piece = new Queen(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this);
                     break;
                 case "king":
-                    piece = new King(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this);
+                    piece = new King(pieceInfo.color,Number(pieceInfo.tilex),Number(pieceInfo.tiley),this,(pieceInfo.firstmove === 1)? true : false);
                     if(piece.getColor() === "white") this.whiteKing = piece;
                     else this.blackKing = piece;
                     break;
@@ -80,7 +80,7 @@ class ChessBoard{
             for(let j = 0; j < this.boardWidth; j++){
                 const piece = this.getTile(i,j).getPiece();
                 if(piece !== null){
-                    const firstMove = (piece.getType() === "pawn" || piece.getType() === "rooke" || piece.getType() === "king")? piece.isFirstMove().toString() : null;
+                    const firstMove = (piece.getType() === "pawn" || piece.getType() === "rooke" || piece.getType() === "king")? piece.isFirstMove() : null;
                     const justMoved2 = (piece.getType() === "pawn")? piece.justMoved2.toString() : null;
                     await db.promise().query(`INSERT INTO chess VALUES(
                         '${guildId}',
