@@ -4,7 +4,7 @@ const { AttachmentBuilder,EmbedBuilder } = require('discord.js');
 
 module.exports = {
     canMove(board,x1,y1,x2,y2){
-        function castlePressed(king,x1){
+        function castlePressed(king,x1) {
             if(king.getX()+2 === x1) return "left";
             if(king.getX()-2 === x1) return "right";
         }
@@ -16,11 +16,11 @@ module.exports = {
         const possibleTiles = board.canMoveFilter(board.getTile(Number(x1),Number(y1)).getPiece().getMoveInfo(),[Number(x1),Number(y1)]);
         for(const tiles of possibleTiles){
             if((tiles[0] === Number(x2)) && (tiles[1] === Number(y2))){
+                board.resetPawn(board.turn);
                 board.movePiece(x1,y1,x2,y2);
                 board.move++;
                 board.updateCheckedTiles();
                 const king = (board.turn === "white")? board.whiteKing : board.blackKing;
-                board.resetPawn(board.turn);
                 if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,x1) === "left") board.castle(king,"left");
                 else if(board.getTile(x2,y2).getPiece().getType() === "king" && castlePressed(king,x1) === "right") board.castle(king,"right");
                 board.turn = board.turn === "white"? "black" : "white";
