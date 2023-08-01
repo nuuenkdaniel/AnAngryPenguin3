@@ -4,7 +4,7 @@ const { drawBoard,canMove } = require('../chess/playChess.js');
 
 module.exports = {
     name: "mvPiece",
-    description: "moves selected piece to desired location Ex. (movePiece x1y1 x2y2)[work in progress]",
+    description: "moves selected piece to desired location Ex. ([prefix]movePiece e2 e4)",
     async execute(message,args,prefix){
         let results = await db.promise().query(`SELECT chesssession,white,black,currentmove FROM botinfo WHERE guildid='${message.guildId}'`);
         if(results[0][0].chesssession !== 1){
@@ -26,7 +26,6 @@ module.exports = {
         const moves = args.join('').split('');
         for(let i = 0, j = 0; i < 8 && j < 4; i++) {
             const letters = ["a","b","c","d","e","f","g","h"];
-            console.log(i);
             if(moves[j] === letters[i]) {
                 moves[j] = i;
                 i = -1;

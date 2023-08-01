@@ -148,6 +148,10 @@ class ChessBoard{
                     if(Math.abs(y2-y1) === 2) this.getTile(x1,y1).getPiece().justMoved2 = true;
                     this.enPassant(x1,y1,x2,y2);
                 }
+                else if(i === 1){
+                    if(x1+2 === x2) this.castle(x2,y2,"right");
+                    if(x1-2 === x2) this.castle(x2,y2,"left");
+                }
                 break;
             }
         }
@@ -168,12 +172,12 @@ class ChessBoard{
         }
     }
 
-    castle(king,direction){
+    castle(x2,y2,direction){
         if(direction === "left") {
-            this.movePiece(0,king.getY(),king.getX()+1,king.getY());
+            this.movePiece(0,y2,x2+1,y2);
         }
         else if(direction === "right"){
-            this.movePiece(7,king.getY(),king.getX()-1,king.getY());
+            this.movePiece(7,y2,x2-1,y2);
         }
     }
     
