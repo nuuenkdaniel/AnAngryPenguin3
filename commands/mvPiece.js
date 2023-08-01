@@ -23,21 +23,31 @@ module.exports = {
             message.reply("Invalid input try again");
             return;
         }
-        args = args.join('');
-        args = args.split('');
-        console.log(args);
+        const moves = args.join('').split('');
+        for(let i = 0, j = 0; i < 8 && j <= 2; i++) {
+            const letters = ["a","b","c","d","e","f","g","h"];
+            if(moves[j] === letters[i]) {
+                moves[j] = i;
+                i = -1;
+                j += 2;
+            }
+        }
+        for(let i = 0; i < moves.length; i++) moves[i] = Number(moves[i]);
+        moves[1] = 8-moves[1];
+        moves[3] = 8-moves[3];
+        console.log(moves);
         const chessBoard = new ChessBoard(8,8,25);
         await chessBoard.dbBoard(message.guildId);
-        const piece = chessBoard.getTile(args[0],args[1]).getPiece();
+        const piece = chessBoard.getTile(moves[0],moves[1]).getPiece();
         if(piece === null){
-            message.reply(`There is no piece at ${args[0]},${args[1]}`);
+            message.reply(`There is no piece at ${args[0]}`);
             return;
         }
         if(piece.getColor() !== chessBoard.turn) {
             message.reply("You can only move your pieces");
             return;
         }
-        if(canMove(chessBoard,Number(args[0]),Number(args[1]),Number(args[2]),Number(args[3]))) {
+        if(canMove(chessBoard,moves[0],moves[1],moves[2],moves[3])) {
             await chessBoard.logBoard(message.guildId);
             const king = chessBoard.turn === "white"? chessBoard.whiteKing : chessBoard.blackKing;
             if(king.isChecked()){
@@ -50,7 +60,7 @@ module.exports = {
                 else message.channel.send(`${chessBoard.turn} is checked`);
             }
         }
-        else message.reply(`Cannot move ${piece.getType()} to ${args[2]},${args[3]}`);
+        else message.reply(`Cannot move ${piece.getType()} to ${args[1]}`);
         try{
             const chessEmbed = await drawBoard(chessBoard);
             message.channel.send( {embeds: [chessEmbed[0]], files: [chessEmbed[1]]} );
