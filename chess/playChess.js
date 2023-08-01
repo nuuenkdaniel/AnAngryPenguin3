@@ -33,15 +33,17 @@ module.exports = {
         const tileSize = 100;
         const boardWidth = board.boardWidth;
         const boardLength = board.boardLength;
-        const canvas = createCanvas(tileSize*boardWidth,tileSize*boardWidth);
+        const gridXOffSet = 40;
+        const gridYOffSet = 40;
+        const canvas = createCanvas(tileSize*boardLength+gridXOffSet,tileSize*boardWidth+gridYOffSet);
         const ctx = canvas.getContext("2d");
         const chessPieces = await loadImage('./assets/ChessPieces.png');
         
         function drawChessBoard(){
             for(let i = 0; i < boardLength; i++){
                 for(let j = 0; j < boardWidth; j++){
-                    const tileX = i * tileSize;
-                    const tileY = j * tileSize;
+                    const tileX = i*tileSize+gridXOffSet;
+                    const tileY = j*tileSize;
                     board.getTile(i,j).giveX(tileX);
                     board.getTile(i,j).giveY(tileY);
                     ctx.fillStyle = board.getTile(i,j).getColor();
@@ -49,6 +51,8 @@ module.exports = {
                     drawPieces(board.getTile(i,j))
                 }
             }
+            drawLetterCoords();
+            drawNumCoords();
             const buffer = canvas.toBuffer("image/png");
             fs.writeFileSync("./assets/ChessBoard.png",buffer);
         }
@@ -76,6 +80,25 @@ module.exports = {
                 case "pawn":
                     ctx.drawImage(chessPieces, 1665, colorYOffSet, 333, 333, tile.getX(), tile.getY(), tileSize, tileSize);
                     break;
+            }
+        }
+
+        function drawLetterCoords(){
+            const letterCords = ['a','b','c','d','e','f','g','h'];
+            const yPixel = board.getTile(0,boardWidth-1).getY()+tileSize+30;
+            for(let i = 0; i < boardLength; i++) {
+                const xPixel = board.getTile(i,0).getX()+tileSize/2-6;
+                ctx.font = "30px Arial"
+                ctx.fillText(letterCords[i],xPixel,yPixel);
+            }
+        }
+
+        function drawNumCoords(){
+            const xPixel = board.getTile(0,0).getX()-30;
+            for(let i = boardWidth-1; i >= 0; i--) {
+                const yPixel = board.getTile(0,i).getY()+tileSize/2+6;
+                ctx.font = "30px Arial";
+                ctx.fillText(boardWidth-i,xPixel,yPixel);
             }
         }
 

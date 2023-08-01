@@ -4,7 +4,7 @@ const { drawBoard,canMove } = require('../chess/playChess.js');
 
 module.exports = {
     name: "mvPiece",
-    description: "moves selected piece to desired location Ex. (movePiece x1 y1 x2 y2)[work in progress]",
+    description: "moves selected piece to desired location Ex. (movePiece x1y1 x2y2)[work in progress]",
     async execute(message,args,prefix){
         let results = await db.promise().query(`SELECT chesssession,white,black,currentmove FROM botinfo WHERE guildid='${message.guildId}'`);
         if(results[0][0].chesssession !== 1){
@@ -19,6 +19,13 @@ module.exports = {
             message.reply("It is not your turn");
             return;
         }
+        if(args > 2) {
+            message.reply("Invalid input try again");
+            return;
+        }
+        args = args.join('');
+        args = args.split('');
+        console.log(args);
         const chessBoard = new ChessBoard(8,8,25);
         await chessBoard.dbBoard(message.guildId);
         const piece = chessBoard.getTile(args[0],args[1]).getPiece();
